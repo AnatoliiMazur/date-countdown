@@ -1,0 +1,21 @@
+body {
+	height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0;
+	font-family: sans-serif;
+}
+
+.date-countdown {
+	display: flex;
+	align-items: center;
+	font-size: 40px;
+}
+
+.item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 0 30px;
+}
