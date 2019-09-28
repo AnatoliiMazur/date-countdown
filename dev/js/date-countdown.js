@@ -18,14 +18,12 @@
 					varName: '_secondsEl',
 					text:    'Seconds'
 				}
-			],
-			timeInMs = Date.now();
-	
-	console.log(timeInMs);
+			];
 
 	function MyDateCountdown(element) {
 		this._element = element;
 		this._date = new Date();
+		this._intervalId = null;
 
 		countdownElements.forEach(function (item) {
 			var
@@ -49,21 +47,56 @@
 			itemEl.appendChild(descriptionEl);
 		}.bind(this));
 
-		if ( element.hasAttribute( 'data-date' ) ) {
-			this._date = new Date( element.getAttribute( 'data-date' ) )
+		if (element.hasAttribute('data-date')) {
+			this.setValue(element.getAttribute('data-date'))
 		}
 
-		// this._date = this._date.getMilliseconds();
-
-		console.log( this._date.getTime() );
-
-		window.setInterval( this.renderDate.bind(this), 1000 );
+		window.__test = this;
 	}
 
-	MyDateCountdown.prototype.renderDate = function() {
-		console.log(Date.now());
+	// Render Date
+	MyDateCountdown.prototype.renderDate = function () {
+
+		if (this._date < Date.now()) {
+			clearInterval(this._intervalId);
+			this._intervalId = null;
+			return
+		}
+
+		var now = Date.now();
+		var target = this._date.getTime();
+		var difference = target - now;
+
+		var MS_IN_SECOND = 1000;
+		var MS_IN_MINUTE = 1000 * 60;
+		var MS_IN_HOUR = 1000 * 60 * 60;
+		var MS_IN_DAY = 1000 * 60 * 60 * 24;
+
+		this._daysEl.innerHTML = Math.floor(difference / MS_IN_DAY);
+		this._hoursEl.innerHTML = Math.floor((difference % MS_IN_DAY) / MS_IN_HOUR);
+		this._minutesEl.innerHTML = Math.floor((difference % MS_IN_HOUR) / MS_IN_MINUTE);
+		this._secondsEl.innerHTML = Math.floor((difference % MS_IN_MINUTE) / MS_IN_SECOND);
+
+		console.log('ired0');
 	};
 
+	// Set Value
+	MyDateCountdown.prototype.setValue = function (value) {
+		if (!value) {
+			throw new Error("Date is required");
+		}
+		if (!(value instanceof Date)) {
+			value = new Date(value);
+		}
+		if (value < Date.now()) {
+			throw new Error("Date is incorrect");
+		}
+		this._date = value;
+		if (this._intervalId != null) {
+			clearInterval(this._intervalId);
+		}
+		this._intervalId = window.setInterval(this.renderDate.bind(this), 1000);
+	};
 
 	document.addEventListener("DOMContentLoaded", function () {
 		var elements = document.querySelectorAll(".date-countdown");
